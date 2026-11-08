@@ -66,7 +66,7 @@ Round 3/             ctf app, challenge notebooks, datasets, tampered model
 DB Backup/           pg_dump files for the three round databases
 ```
 
-`Round 1/` and `Round 3/` also have their own Dockerfile.prod and entrypoint scripts. `Round 2/` and the root have Render config for single-service deploys.
+`Round 1/` and `Round 3/` also have their own Dockerfile.prod and entrypoint scripts. `Round 1/` and `Round 2/` also have a `render.yaml` for single-service deploys.
 
 ## Notes
 
