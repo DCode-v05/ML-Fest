@@ -63,13 +63,11 @@ shared_auth/         a consolidated CustomUser model (role, approval, points)
 Round 1/             quiz app, question CSV
 Round 2/             debugchallenge app, buggy notebooks and datasets
 Round 3/             ctf app, challenge notebooks, datasets, tampered model
-DB Backup/           pg_dump files for the three round databases
 ```
 
 `Round 1/` and `Round 3/` also have their own Dockerfile.prod and entrypoint scripts. `Round 1/` and `Round 2/` also have a `render.yaml` for single-service deploys.
 
 ## Notes
 
-- `DB Backup/` holds dumps taken after the event, so they contain real registrations. Check them before making the repo public.
 - `Round 2/quiz/views.py` is a leftover; `quiz` is not an installed app in Round 2.
 - Round 2's views serve `ML_Challenge_Notebooks.zip` from `challenge_materials/`. The setup ZIP and scripts its README mentions are not in the repo.
