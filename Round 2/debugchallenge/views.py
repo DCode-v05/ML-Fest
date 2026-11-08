@@ -67,10 +67,8 @@ def login_view(request):
             username_or_email = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            # Try authenticating with the value as username first
             user = authenticate(request, username=username_or_email, password=password)
 
-            # If that fails, try looking up by email (for admin email login)
             if user is None:
                 try:
                     lookup_user = CustomUser.objects.get(email=username_or_email)
@@ -110,7 +108,6 @@ def waiting_room(request):
         event = Event.objects.first()
         participant = Participant.objects.create(user=request.user, event=event)
 
-    # Evaluators go to their grading panel
     if participant.role == 'evaluator':
         return redirect('debugchallenge:evaluator_panel')
 
@@ -126,8 +123,6 @@ def waiting_room(request):
     if participant.has_submitted:
         return redirect('debugchallenge:result')
 
-    # Approved participants always go to challenge page
-    # (the challenge page itself handles active/inactive display)
     if participant.status == 'approved':
         return redirect('debugchallenge:challenge')
 
@@ -154,7 +149,6 @@ def challenge_view(request):
             'event': event,
         })
 
-    # Event active = visible to participants.  No timer / no tab-switch.
     challenges = Challenge.objects.filter(event=event).order_by('order') if event else Challenge.objects.none()
 
     context = {
@@ -181,17 +175,14 @@ def upload_submission(request):
         if not challenge_id or not uploaded_file:
             return JsonResponse({'status': 'error', 'message': 'Missing challenge_id or file'})
 
-        # Validate file type
         if not uploaded_file.name.endswith('.ipynb'):
             return JsonResponse({'status': 'error', 'message': 'Only .ipynb files are accepted'})
 
-        # Max file size: 10MB
         if uploaded_file.size > 10 * 1024 * 1024:
             return JsonResponse({'status': 'error', 'message': 'File too large. Max 10MB.'})
 
         challenge = get_object_or_404(Challenge, id=challenge_id)
 
-        # Create or update submission
         submission, created = Submission.objects.update_or_create(
             participant=participant,
             challenge=challenge,
@@ -222,7 +213,6 @@ def record_tab_switch(request):
         participant.save()
 
         if violated:
-            # Auto-submit
             participant.finished_at = timezone.now()
             participant.has_submitted = True
             participant.calculate_score()
@@ -262,7 +252,6 @@ def time_remaining(request):
     event = participant.event
     if event:
         remaining = participant.time_remaining_seconds
-        # Auto-submit server-side if time is up
         if participant.is_time_up and not participant.has_submitted and participant.started_at:
             participant.finished_at = timezone.now()
             participant.has_submitted = True
@@ -319,7 +308,6 @@ def leaderboard(request):
         except Participant.DoesNotExist:
             pass
 
-    # Enforce leaderboard_public for regular participants
     if not is_admin and not is_evaluator:
         if not event or not event.leaderboard_public:
             messages.info(request, 'The leaderboard is not available yet.')
@@ -333,7 +321,6 @@ def leaderboard(request):
 
     total_bugs = sum(c.total_bugs for c in Challenge.objects.filter(event=event)) if event else 0
 
-    # Admins/evaluators always see scores; participants only when toggle is on
     show_scores = is_admin or is_evaluator or (event and event.show_score_to_participant)
 
     context = {
@@ -408,8 +395,6 @@ def download_all_materials(request):
     )
 
 
-# ============ ADMIN VIEWS ============
-
 @admin_required
 def admin_dashboard(request):
     event = Event.objects.first()
@@ -424,7 +409,6 @@ def admin_dashboard(request):
     submitted = participants.filter(has_submitted=True)
     violated = participants.filter(tab_switch_violated=True)
 
-    # Get submission counts per participant
     submission_data = {}
     for p in participants:
         subs = Submission.objects.filter(participant=p)
@@ -440,7 +424,6 @@ def admin_dashboard(request):
         'show_score_to_participant': event.show_score_to_participant,
     })
 
-    # Build evaluation leaderboard - participants ranked by evaluation score
     eval_participants = Participant.objects.filter(
         event=event, role='participant'
     ).select_related('user').order_by('-score', 'time_taken_ms')
@@ -554,13 +537,11 @@ def reset_challenge(request):
     """Reset challenge: clear all submissions, scores, and submission state."""
     event = Event.objects.first()
     if event:
-        # Delete all evaluations and submissions
         Evaluation.objects.filter(
             participant__event=event
         ).delete()
         Submission.objects.filter(participant__event=event).delete()
 
-        # Reset all participant state but keep their registration and approval
         Participant.objects.filter(event=event).update(
             started_at=None,
             finished_at=None,
@@ -572,7 +553,6 @@ def reset_challenge(request):
             status='approved',
         )
 
-        # Reset event state
         event.is_active = False
         event.started_at = None
         event.save()
@@ -631,7 +611,6 @@ def grade_submission(request, submission_id):
         submission.is_graded = True
         submission.save()
 
-        # Recalculate participant's total score
         submission.participant.calculate_score()
 
         messages.success(request, f'Graded {submission.participant.user.username} — {submission.challenge.title}: {score} pts')
@@ -669,8 +648,6 @@ def view_submissions(request, participant_id):
     return render(request, 'debugchallenge/view_submissions.html', context)
 
 
-# ============ EVALUATOR VIEWS ============
-
 @admin_required
 def set_role(request, participant_id):
     """Admin sets a participant's role to 'participant' or 'evaluator'."""
@@ -680,10 +657,8 @@ def set_role(request, participant_id):
         if new_role in ('participant', 'evaluator'):
             old_role = participant.role
             participant.role = new_role
-            # If changing to evaluator, clear their own evaluator assignment
             if new_role == 'evaluator':
                 participant.evaluator = None
-            # If changing from evaluator to participant, unassign all their assigned participants
             if old_role == 'evaluator' and new_role == 'participant':
                 Participant.objects.filter(evaluator=participant).update(evaluator=None)
             participant.save()
@@ -699,7 +674,6 @@ def evaluator_management(request):
         event=event, role='evaluator'
     ).select_related('user')
 
-    # Build assignment data for each evaluator
     evaluator_data = []
     for ev in evaluators:
         assigned = Participant.objects.filter(
@@ -711,19 +685,16 @@ def evaluator_management(request):
             'assigned_count': assigned.count(),
         })
 
-    # Unassigned participants (role=participant, no evaluator assigned)
     unassigned = Participant.objects.filter(
         event=event, role='participant', evaluator__isnull=True
     ).select_related('user')
 
-    # All participants available for assignment
     all_participants = Participant.objects.filter(
         event=event, role='participant'
     ).select_related('user')
 
     assigned_count = all_participants.exclude(evaluator__isnull=True).count()
 
-    # Build evaluation leaderboard - participants ranked by evaluation score (descending)
     eval_participants = Participant.objects.filter(
         event=event, role='participant'
     ).select_related('user').order_by('-score', 'time_taken_ms')
@@ -769,10 +740,8 @@ def assign_participants(request):
 
         evaluator = get_object_or_404(Participant, id=evaluator_id, role='evaluator')
 
-        # Clear previous assignments for this evaluator
         Participant.objects.filter(evaluator=evaluator).update(evaluator=None)
 
-        # Assign selected participants
         if participant_ids:
             Participant.objects.filter(
                 id__in=participant_ids, role='participant'
@@ -783,8 +752,6 @@ def assign_participants(request):
 
     return redirect('debugchallenge:evaluator_management')
 
-
-# ============ EVALUATOR PANEL VIEWS ============
 
 CLASSIFICATION_BUGS = 12
 REGRESSION_BUGS = 6
@@ -850,7 +817,6 @@ def evaluate_participant(request, participant_id):
         Participant, id=participant_id, evaluator=evaluator, role='participant'
     )
 
-    # Get or create evaluation records
     cls_eval, _ = Evaluation.objects.get_or_create(
         evaluator=evaluator, participant=participant, challenge_type='classification',
         defaults={'bug_results': {str(i): False for i in range(1, CLASSIFICATION_BUGS + 1)}}
@@ -861,7 +827,6 @@ def evaluate_participant(request, participant_id):
     )
 
     if request.method == 'POST':
-        # Process classification bugs
         cls_results = {}
         for i in range(1, CLASSIFICATION_BUGS + 1):
             cls_results[str(i)] = request.POST.get(f'cls_bug_{i}') == 'on'
@@ -869,7 +834,6 @@ def evaluate_participant(request, participant_id):
         cls_eval.score = sum(1 for v in cls_results.values() if v)
         cls_eval.save()
 
-        # Process regression bugs
         reg_results = {}
         for i in range(1, REGRESSION_BUGS + 1):
             reg_results[str(i)] = request.POST.get(f'reg_bug_{i}') == 'on'
@@ -877,7 +841,6 @@ def evaluate_participant(request, participant_id):
         reg_eval.score = sum(1 for v in reg_results.values() if v)
         reg_eval.save()
 
-        # Update participant's total score
         participant.calculate_score()
 
         messages.success(
@@ -889,7 +852,6 @@ def evaluate_participant(request, participant_id):
         )
         return redirect('debugchallenge:evaluator_panel')
 
-    # Build bug lists with current state
     cls_bugs = []
     for i in range(1, CLASSIFICATION_BUGS + 1):
         cls_bugs.append({
@@ -946,7 +908,6 @@ def export_leaderboard_xlsx(request):
     ws = wb.active
     ws.title = "Round 2 - Leaderboard"
 
-    # Styles
     header_font = Font(bold=True, color="FFFFFF", size=12)
     header_fill = PatternFill(start_color="2E7D32", end_color="2E7D32", fill_type="solid")
     header_align = Alignment(horizontal="center", vertical="center")
@@ -979,7 +940,6 @@ def export_leaderboard_xlsx(request):
             if col in (1, 5, 6):
                 cell.alignment = Alignment(horizontal="center")
 
-    # Auto-width columns
     for col_cells in ws.columns:
         max_len = max(len(str(cell.value or "")) for cell in col_cells) + 2
         ws.column_dimensions[col_cells[0].column_letter].width = max_len

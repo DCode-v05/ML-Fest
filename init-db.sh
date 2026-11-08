@@ -1,6 +1,4 @@
 #!/bin/bash
-# Create additional databases for Round 2 and Round 3
-# This script runs automatically on first PostgreSQL init.
 
 set -e
 

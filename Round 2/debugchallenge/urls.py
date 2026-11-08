@@ -4,13 +4,11 @@ from . import views
 app_name = 'debugchallenge'
 
 urlpatterns = [
-    # Auth
     path('', views.home, name='home'),
     path('register/', views.register, name='register'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
 
-    # Participant
     path('waiting/', views.waiting_room, name='waiting_room'),
     path('challenge/', views.challenge_view, name='challenge'),
     path('api/upload-submission/', views.upload_submission, name='upload_submission'),
@@ -22,11 +20,9 @@ urlpatterns = [
     path('download-notebook/<int:challenge_id>/', views.download_notebook, name='download_notebook'),
     path('download-all-materials/', views.download_all_materials, name='download_all_materials'),
 
-    # Leaderboard
     path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('leaderboard/export/', views.export_leaderboard_xlsx, name='export_leaderboard'),
 
-    # Admin
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-dashboard/approve/<int:participant_id>/', views.approve_participant, name='approve_participant'),
     path('admin-dashboard/disqualify/<int:participant_id>/', views.disqualify_participant, name='disqualify_participant'),
@@ -41,12 +37,10 @@ urlpatterns = [
     path('admin-dashboard/grade/<int:submission_id>/', views.grade_submission, name='grade_submission'),
     path('admin-dashboard/download-submission/<int:submission_id>/', views.download_submission, name='download_submission'),
 
-    # Evaluator management (admin)
     path('admin-dashboard/set-role/<int:participant_id>/', views.set_role, name='set_role'),
     path('admin-dashboard/evaluators/', views.evaluator_management, name='evaluator_management'),
     path('admin-dashboard/evaluators/assign/', views.assign_participants, name='assign_participants'),
 
-    # Evaluator panel (evaluator users)
     path('evaluator/', views.evaluator_panel, name='evaluator_panel'),
     path('evaluator/grade/<int:participant_id>/', views.evaluate_participant, name='evaluate_participant'),
 ]

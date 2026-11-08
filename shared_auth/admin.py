@@ -11,7 +11,6 @@ class CustomUserAdmin(UserAdmin):
     list_editable = ('is_approved', 'role')
     ordering = ('-date_joined',)
 
-    # Add custom fields to the admin forms
     fieldsets = UserAdmin.fieldsets + (
         ('ML Fest Fields', {
             'fields': ('role', 'is_approved', 'total_points', 'last_flag_at'),

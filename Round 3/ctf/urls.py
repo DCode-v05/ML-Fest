@@ -3,33 +3,26 @@ from . import views
 from . import evaluation
 
 urlpatterns = [
-    # Home
     path('', views.home, name='home'),
 
-    # Auth
     path('auth/register/', views.register_view, name='register'),
     path('auth/login/', views.login_view, name='login'),
     path('auth/logout/', views.logout_view, name='logout'),
     path('auth/pending/', views.pending_approval, name='pending_approval'),
 
-    # Challenges
     path('challenges/', views.challenges_list, name='challenges_list'),
     path('challenges/<int:challenge_id>/', views.challenge_detail, name='challenge_detail'),
     path('challenges/<int:challenge_id>/download/<str:filename>/', views.challenge_download, name='challenge_download'),
     path('dashboard/', views.dashboard, name='dashboard'),
 
-    # Flag submission API (AJAX)
     path('api/challenges/<int:challenge_id>/flags/<int:flag_order>/submit/', views.submit_flag, name='submit_flag'),
 
-    # Notebook auth API (used by Jupyter notebooks)
     path('api/notebook-login/', views.notebook_login, name='notebook_login'),
 
-    # Leaderboard
     path('leaderboard/', views.leaderboard_page, name='leaderboard'),
     path('api/leaderboard/', views.leaderboard_api, name='leaderboard_api'),
     path('leaderboard/export/', views.export_leaderboard_xlsx, name='export_leaderboard'),
 
-    # Admin dashboard
     path('admin-panel/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-panel/toggle-event/', views.admin_toggle_event, name='admin_toggle_event'),
     path('admin-panel/toggle-leaderboard/', views.admin_toggle_leaderboard, name='admin_toggle_leaderboard'),
@@ -49,12 +42,10 @@ urlpatterns = [
     path('admin-panel/regenerate-flags/<int:user_id>/', views.admin_regenerate_user_flags, name='admin_regenerate_user_flags'),
     path('admin-panel/remove-all-users/', views.remove_all_users, name='remove_all_users'),
 
-    # Evaluator dashboard
     path('evaluator/', views.evaluator_dashboard, name='evaluator_dashboard'),
     path('evaluator/approve/<int:score_id>/', views.evaluator_approve, name='evaluator_approve'),
     path('evaluator/reject/<int:score_id>/', views.evaluator_reject, name='evaluator_reject'),
 
-    # Evaluation endpoints (called by challenge notebooks)
     path('evaluate/challenge-1', evaluation.evaluate_challenge_1, name='evaluate_challenge_1'),
     path('evaluate/challenge-2', evaluation.evaluate_challenge_2, name='evaluate_challenge_2'),
     path('evaluate/challenge-3', evaluation.evaluate_challenge_3, name='evaluate_challenge_3'),

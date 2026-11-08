@@ -7,11 +7,7 @@
     <meta name="theme-color" content="#FCA847">
     <title>{% block title %}ML Fest{% endblock %} | Team Qernels</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
-    <style>
-        /* ========== GITINGEST NEO-BRUTALIST DESIGN SYSTEM ========== */
-
-        /* --- THEME VARIABLES --- */
-        :root {
+    <style>        :root {
             --bg-page: #FFFDF8;
             --bg-card: #fff4da;
             --bg-card-alt: #fafafa;
@@ -68,7 +64,6 @@
             z-index: 1;
         }
 
-        /* --- NAVBAR --- */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -162,7 +157,6 @@
 
         .nav-link:hover { color: var(--text-primary); }
 
-        /* --- BUTTONS (Neo-Brutalist) --- */
         .btn-wrap {
             position: relative;
             display: inline-block;
@@ -228,7 +222,6 @@
             transform: translate(2px, 2px);
         }
 
-        /* Simple buttons without shadow wrapper */
         .btn-flat {
             display: inline-flex;
             align-items: center;
@@ -252,7 +245,6 @@
         .btn-flat.secondary { background: var(--accent-beige); }
         .btn-flat.outline { background: var(--bg-card); color: var(--text-primary); }
 
-        /* --- CARDS (Neo-Brutalist) --- */
         .card-wrap {
             position: relative;
             margin-bottom: 24px;
@@ -300,7 +292,6 @@
             letter-spacing: -0.3px;
         }
 
-        /* --- FORMS --- */
         .form-group { margin-bottom: 18px; }
 
         .form-label {
@@ -351,7 +342,6 @@
             cursor: pointer;
         }
 
-        /* --- ALERTS --- */
         .alert {
             padding: 12px 16px;
             border-radius: 8px;
@@ -381,7 +371,6 @@
             color: var(--warning-text);
         }
 
-        /* --- BADGES (Neo-Brutalist) --- */
         .badge {
             display: inline-flex;
             align-items: center;
@@ -401,7 +390,6 @@
         .badge-info { background: #60a5fa; color: #000; }
         .badge-neutral { background: var(--accent-beige); color: var(--text-primary); }
 
-        /* --- TABLES --- */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -422,7 +410,6 @@
             letter-spacing: 1.5px;
         }
 
-        /* --- LAYOUT --- */
         .container {
             max-width: 1100px;
             margin: 0 auto;
@@ -436,12 +423,10 @@
             padding: 60px 20px;
         }
 
-        /* --- GRID --- */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
         .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
 
-        /* --- STAT CARDS --- */
         .stat-card-wrap {
             position: relative;
         }
@@ -481,7 +466,6 @@
             font-weight: 700;
         }
 
-        /* --- HERO --- */
         .hero {
             text-align: center;
             padding: 80px 20px 40px;
@@ -503,7 +487,6 @@
             margin-bottom: 32px;
         }
 
-        /* --- SPARKLE DECORATION --- */
         .sparkle {
             display: inline-block;
             width: 10px;
@@ -522,7 +505,6 @@
             50% { opacity: 0.5; transform: scale(0.8); }
         }
 
-        /* --- FOOTER --- */
         body {
             display: flex;
             flex-direction: column;
@@ -551,7 +533,6 @@
             background: var(--bg-card);
         }
 
-        /* --- UTILITY --- */
         .text-center { text-align: center; }
         .text-accent { color: var(--accent-red); }
         .text-orange { color: var(--accent-orange); }

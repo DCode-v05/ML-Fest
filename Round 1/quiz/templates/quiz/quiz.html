@@ -10,9 +10,7 @@
             document.documentElement.setAttribute('data-theme', t);
         })();
     </script>
-    <style>
-        /* ===== THEME SYSTEM ===== */
-        [data-theme="light"] {
+    <style>        [data-theme="light"] {
             --page-bg: #FFFDF8;
             --bg-primary: #FFFDF8;
             --bg-secondary: #fff4da;
@@ -150,7 +148,6 @@
             margin-top: 59px;
         }
 
-        /* Question Navigator Sidebar */
         .q-navigator {
             width: 130px;
             min-width: 130px;
@@ -206,7 +203,6 @@
             color: #111827;
         }
 
-        /* Question Content */
         .q-content {
             flex: 1;
             overflow-y: auto;
@@ -360,7 +356,6 @@
             transform: none;
         }
 
-        /* Fullscreen prompt overlay */
         .fs-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -387,7 +382,6 @@
             text-align: center;
         }
 
-        /* Toast notification */
         .toast {
             position: fixed;
             top: 70px;
@@ -417,7 +411,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Submit confirmation modal */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -460,7 +453,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Theme Toggle in Quiz */
         .theme-toggle-quiz {
             background: var(--bg-card);
             border: 3px solid var(--border-color);
@@ -475,7 +467,6 @@
             transform: translate(-1px, -1px);
         }
 
-        /* Fullscreen-paused overlay */
         .fs-paused-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -498,7 +489,6 @@
             text-align: center; line-height: 1.6;
         }
 
-        /* Disabled quiz state */
         .quiz-disabled .q-content,
         .quiz-disabled .q-navigator {
             pointer-events: none;
@@ -516,7 +506,6 @@
     </style>
 </head>
 <body>
-    <!-- Fullscreen Prompt -->
     <div class="fs-overlay" id="fsOverlay">
         <h2>ML <span class="accent">Fest</span> — Quiz</h2>
         <p>The quiz will run in fullscreen mode. Click below to start.</p>
@@ -525,7 +514,6 @@
         </button>
     </div>
 
-    <!-- Header -->
     <div class="quiz-header">
         <div class="quiz-header-left">
             <div class="quiz-brand">ML <span class="accent">Fest</span></div>
@@ -548,14 +536,11 @@
         </div>
     </div>
 
-    <!-- Progress Bar -->
     <div class="progress-bar">
         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
     </div>
 
-    <!-- Quiz Body -->
     <div class="quiz-body" id="quizBody" style="display: none;">
-        <!-- Navigator -->
         <div class="q-navigator" id="qNavigator">
             {% for q in questions %}
             <button class="q-nav-btn" data-index="{{ forloop.counter0 }}" onclick="goToQuestion({{ forloop.counter0 }})">
@@ -564,10 +549,8 @@
             {% endfor %}
         </div>
 
-        <!-- Question Content -->
         <div class="q-content">
             <div class="question-card" id="questionCard">
-                <!-- Filled by JS -->
             </div>
             <div class="q-controls">
                 <button class="btn btn-outline" id="prevBtn" onclick="prevQuestion()">← Previous</button>
@@ -576,7 +559,6 @@
         </div>
     </div>
 
-    <!-- Submit Modal -->
     <div class="modal-overlay" id="submitModal">
         <div class="modal-box">
             <h3>Submit Quiz?</h3>
@@ -592,7 +574,6 @@
         </div>
     </div>
 
-    <!-- Fullscreen Paused Overlay -->
     <div class="fs-paused-overlay" id="fsPausedOverlay">
         <h2>Fullscreen Required</h2>
         <p>You have exited fullscreen mode. The quiz is paused. Re-enter fullscreen to continue answering.</p>

@@ -121,12 +121,10 @@ def quiz_view(request):
     if participant.status == 'disqualified':
         return render(request, 'quiz/disqualified.html')
 
-    # Mark participant start time (their personal timer starts now)
     if not participant.started_at:
         participant.started_at = timezone.now()
         participant.save()
 
-    # Auto-submit if participant's personal timer has expired
     if participant.is_time_up:
         participant.finished_at = timezone.now()
         participant.has_submitted = True
@@ -135,11 +133,9 @@ def quiz_view(request):
 
     questions = list(Question.objects.filter(event=event).order_by('question_no'))
 
-    # Shuffle questions per user (consistent order using user ID as seed)
     rng = random.Random(request.user.id)
     rng.shuffle(questions)
 
-    # Get existing answers
     answers = {}
     for ans in Answer.objects.filter(participant=participant, question__event=event):
         answers[ans.question_id] = ans.selected_option
@@ -192,7 +188,6 @@ def record_tab_switch(request):
         participant.save()
 
         if violated:
-            # Auto-submit
             participant.finished_at = timezone.now()
             participant.has_submitted = True
             participant.calculate_score()
@@ -231,7 +226,6 @@ def time_remaining(request):
     event = participant.event
     if event:
         remaining = participant.time_remaining_seconds
-        # Auto-submit server-side if time is up
         if participant.is_time_up and not participant.has_submitted and participant.started_at:
             participant.finished_at = timezone.now()
             participant.has_submitted = True
@@ -278,7 +272,6 @@ def leaderboard(request):
     event = Event.objects.first()
     is_admin = request.user.is_authenticated and request.user.is_staff
     
-    # Check if leaderboard is public or user is admin
     if event and not event.leaderboard_public and not is_admin:
         return render(request, 'quiz/leaderboard_private.html', {'event': event})
 
@@ -294,8 +287,6 @@ def leaderboard(request):
     }
     return render(request, 'quiz/leaderboard.html', context)
 
-
-# ============ ADMIN VIEWS ============
 
 @staff_member_required
 def admin_dashboard(request):
@@ -380,7 +371,6 @@ def stop_event(request):
     if event:
         event.is_active = False
         event.save()
-        # Auto-submit all who haven't submitted
         active = Participant.objects.filter(event=event, has_submitted=False, started_at__isnull=False)
         for p in active:
             p.finished_at = timezone.now()
@@ -411,10 +401,8 @@ def reset_quiz(request):
     """Reset quiz: clear all answers, scores, and submission state so users can take a new round."""
     event = Event.objects.first()
     if event:
-        # Delete all answers
         Answer.objects.filter(participant__event=event).delete()
 
-        # Reset all participant quiz state but keep their registration and approval
         Participant.objects.filter(event=event).update(
             started_at=None,
             finished_at=None,
@@ -426,7 +414,6 @@ def reset_quiz(request):
             status='approved',
         )
 
-        # Reset event state — keep is_active=False so admin can start again
         event.is_active = False
         event.started_at = None
         event.save()
@@ -441,7 +428,6 @@ def remove_participant(request, participant_id):
     participant = get_object_or_404(Participant, id=participant_id)
     username = participant.user.username
     user = participant.user
-    # Delete answers, participant, and the user account
     Answer.objects.filter(participant=participant).delete()
     participant.delete()
     user.delete()
@@ -483,7 +469,6 @@ def export_leaderboard_xlsx(request):
     ws = wb.active
     ws.title = "Round 1 - Leaderboard"
 
-    # Styles
     header_font = Font(bold=True, color="FFFFFF", size=12)
     header_fill = PatternFill(start_color="1F4E79", end_color="1F4E79", fill_type="solid")
     header_align = Alignment(horizontal="center", vertical="center")
@@ -501,7 +486,6 @@ def export_leaderboard_xlsx(request):
         cell.border = thin_border
 
     for i, p in enumerate(participants, 1):
-        # Convert time_taken_ms to readable format
         total_sec = p.time_taken_ms // 1000
         mins, secs = divmod(total_sec, 60)
         time_str = f"{mins}m {secs}s"
@@ -522,7 +506,6 @@ def export_leaderboard_xlsx(request):
             if col in (1, 5, 6):
                 cell.alignment = Alignment(horizontal="center")
 
-    # Auto-width columns
     for col in ws.columns:
         max_len = max(len(str(cell.value or "")) for cell in col) + 2
         ws.column_dimensions[col[0].column_letter].width = max_len

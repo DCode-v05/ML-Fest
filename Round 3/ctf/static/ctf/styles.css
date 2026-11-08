@@ -1,8 +1,3 @@
-/* ── ML Fest Round 3 — Supplemental Styles ── */
-/* Primary styles are inlined in base.html for zero-FOUC. */
-/* This file holds utility helpers and animations.       */
-
-/* progress bar used in challenge_detail and dashboard */
 .progress-bar-outer {
     width: 100%;
     height: 12px;
@@ -19,7 +14,6 @@
 }
 .progress-bar-inner.full { background: var(--green, #16a34a); }
 
-/* pulse dot for live event indicator */
 @keyframes pulse-dot {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
@@ -32,23 +26,19 @@
     animation: pulse-dot 1.5s infinite;
 }
 
-/* fade-in for challenge cards */
 @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 .fade-up { animation: fade-up 0.4s ease both; }
 
-/* table row hover */
 table tbody tr:hover { background: rgba(0,0,0,0.02); }
 
-/* code blocks */
 code {
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
     font-size: 0.88em;
 }
 
-/* toast notification */
 .toast {
     position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 10000;
     max-width: 360px; padding: 0.85rem 1.2rem;
@@ -63,7 +53,6 @@ code {
 .toast-error   { background: #fff0f1; color: #b91c1c; }
 .toast-info    { background: #e8f0fe; color: #1d4ed8; }
 
-/* visually hidden */
 .sr-only {
     position: absolute; width: 1px; height: 1px;
     padding: 0; margin: -1px; overflow: hidden;

@@ -3,7 +3,6 @@ set -e
 
 echo "=== ML Fest Round 3 — Starting ==="
 
-# Wait for database to be ready
 echo "Waiting for PostgreSQL..."
 while ! python -c "
 import socket
@@ -15,11 +14,9 @@ s.close()
 done
 echo "PostgreSQL is ready!"
 
-# Generate migrations for ctf
 echo "Generating migrations..."
 python manage.py makemigrations ctf --noinput 2>&1 || true
 
-# Apply migrations (shared_auth already applied by R1, will skip)
 echo "Applying migrations..."
 max_retries=5
 retry=0
@@ -33,15 +30,12 @@ until python manage.py migrate --noinput 2>&1; do
     sleep 5
 done
 
-# Collect static files
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Seed challenges
 echo "Seeding challenges..."
 python manage.py seed_challenges 2>&1 || true
 
-# Create admin user
 echo "Creating admin user..."
 if [ -n "$ADMIN_USERNAME" ] && [ -n "$ADMIN_PASSWORD" ]; then
     python manage.py create_admin \

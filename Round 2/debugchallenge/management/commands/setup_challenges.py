@@ -6,7 +6,6 @@ class Command(BaseCommand):
     help = 'Set up the two debugging challenges for ML Fest Round 2'
 
     def handle(self, *args, **options):
-        # Create or get the event
         event, created = Event.objects.get_or_create(
             id=1,
             defaults={
@@ -22,7 +21,6 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f'Event already exists: {event.name}')
 
-        # Classification challenge
         c1, created1 = Challenge.objects.get_or_create(
             event=event,
             challenge_type='classification',
@@ -46,7 +44,6 @@ class Command(BaseCommand):
         else:
             self.stdout.write('Classification challenge already exists')
 
-        # Regression challenge
         c2, created2 = Challenge.objects.get_or_create(
             event=event,
             challenge_type='regression',

@@ -37,7 +37,6 @@ th { font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spa
     <a href="{% url 'admin_user_flags' %}" style="margin-left:1rem; font-weight:700; font-size:0.9rem;">🔑 View All User Flags →</a>
 </p>
 
-<!-- Event Controls -->
 <div class="section">
     <h2>⚡ Event Controls</h2>
     <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
@@ -56,7 +55,6 @@ th { font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spa
     <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.5rem;">When stopped, all flag submissions are rejected.</p>
 </div>
 
-<!-- Challenge Visibility -->
 <div class="section">
     <h2>👁 Challenge Visibility</h2>
     <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
@@ -74,7 +72,6 @@ th { font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spa
     </div>
 </div>
 
-<!-- Evaluator Assignments -->
 <div class="section">
     <h2>👥 Evaluator–Participant Assignments</h2>
     <form method="POST" action="{% url 'admin_assign_evaluator' %}" style="display:flex; gap:0.6rem; flex-wrap:wrap; align-items:flex-end; margin-bottom:1rem;">
@@ -140,7 +137,6 @@ th { font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spa
     </div>
 </div>
 
-<!-- Leaderboard Controls -->
 <div class="section">
     <h2>📊 Leaderboard Controls</h2>
     <p>Total approved score entries: <strong>{{ total_approved_scores }}</strong></p>
@@ -161,7 +157,6 @@ th { font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spa
     <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem;">Reset will clear all scores, submissions and set every participant's points to zero.</p>
 </div>
 
-<!-- Pending User Approvals -->
 <div class="section">
     <h2>🔑 Pending User Approvals</h2>
     <div class="table-wrap">
@@ -194,7 +189,6 @@ th { font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spa
     </div>
 </div>
 
-<!-- Pending Flag Approvals -->
 <div class="section">
     <h2>🏁 Pending Flag Approvals</h2>
     <div class="table-wrap">
@@ -242,7 +236,6 @@ th { font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spa
     </div>
 </div>
 
-<!-- User Management -->
 <div class="section">
     <h2>👤 User Management</h2>
     <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem;">
@@ -306,7 +299,6 @@ th { font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spa
     </div>
 </div>
 
-<!-- Challenge & Flag Management -->
 <div class="section">
     <h2>🎯 Challenge & Flag Management</h2>
     <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">

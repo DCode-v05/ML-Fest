@@ -24,7 +24,6 @@ from .models import Challenge, Flag, UserFlag
 
 User = get_user_model()
 
-# ── Helpers ──────────────────────────────────────────────────────
 
 FEATURE_COLS = ["Night_Activity", "Trust_Index", "Contribution", "Conflict_Score"]
 EXPECTED_COLS = ["ID"] + FEATURE_COLS + ["Label"]
@@ -39,7 +38,6 @@ def _flag_for_challenge(order, user=None):
         uf = UserFlag.objects.filter(user=user, challenge__order=order).first()
         if uf:
             return uf.flag_value
-    # Fallback to global flag
     flag = Flag.objects.filter(challenge__order=order, flag_order=1).first()
     return flag.flag_content if flag else None
 
@@ -78,8 +76,6 @@ def _failure(message, **extra):
 def _error(message, status=400):
     return JsonResponse({"result": "error", "detail": message}, status=status)
 
-
-# ── Challenge 1 — Data Poisoning ─────────────────────────────────
 
 @csrf_exempt
 @require_POST
@@ -136,8 +132,6 @@ def evaluate_challenge_1(request):
         )
 
 
-# ── Challenge 2 — Constrained Data Poisoning ─────────────────────
-
 @csrf_exempt
 @require_POST
 def evaluate_challenge_2(request):
@@ -158,7 +152,6 @@ def evaluate_challenge_2(request):
     if missing:
         return _error(f"CSV is missing required columns: {missing}")
 
-    # Load original
     original_path = _dataset_path("challenge2_gatekeeper_dataset.csv")
     try:
         original = pd.read_csv(original_path)
@@ -168,7 +161,6 @@ def evaluate_challenge_2(request):
     if len(submitted) != len(original):
         return _failure("Row count does not match the original dataset.")
 
-    # Guard: last row must be unchanged
     last_original = original.iloc[-1][FEATURE_COLS + ["Label"]].reset_index(drop=True)
     last_submitted = submitted.iloc[-1][FEATURE_COLS + ["Label"]].reset_index(drop=True)
     if not last_original.equals(last_submitted):
@@ -179,7 +171,6 @@ def evaluate_challenge_2(request):
             tampered_location="last row (ID = 10)",
         )
 
-    # Guard: Label column must be identical
     if not original["Label"].reset_index(drop=True).equals(
         submitted["Label"].reset_index(drop=True)
     ):
@@ -224,8 +215,6 @@ def evaluate_challenge_2(request):
             **confidence,
         )
 
-
-# ── Challenge 3 — Fix the Corrupted Model ────────────────────────
 
 @csrf_exempt
 @require_POST
@@ -282,8 +271,6 @@ def evaluate_challenge_3(request):
         )
 
 
-# ── Challenge 4 — Model Evaluation (ROC-AUC >= 0.85) ──────────────
-
 @csrf_exempt
 @require_POST
 def evaluate_challenge_4(request):
@@ -309,7 +296,6 @@ def evaluate_challenge_4(request):
     if not all((y_pred >= 0) & (y_pred <= 1)):
         return _error("All prediction values must be probabilities in the range [0, 1].")
 
-    # Reproduce y_test from the bank marketing dataset
     from sklearn.preprocessing import LabelEncoder, StandardScaler
     from sklearn.model_selection import train_test_split
 
@@ -347,7 +333,6 @@ def evaluate_challenge_4(request):
             f"but test set has {len(y_test)} samples.",
         )
 
-    # Compute AUC (trapezoidal — descending sort)
     def compute_auc(y_t, y_s):
         y_t = np.array(y_t, dtype=float)
         y_s = np.array(y_s, dtype=float)
@@ -391,8 +376,6 @@ def evaluate_challenge_4(request):
             accuracy=accuracy,
         )
 
-
-# ── Challenge 5 — Recover Model Weights ──────────────────────────
 
 @csrf_exempt
 @require_POST

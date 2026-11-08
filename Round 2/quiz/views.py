@@ -125,12 +125,10 @@ def challenge_view(request):
             'event': event,
         })
 
-    # Mark participant start time (their personal timer starts now)
     if not participant.started_at:
         participant.started_at = timezone.now()
         participant.save()
 
-    # Auto-submit if participant's personal timer has expired
     if participant.is_time_up:
         participant.finished_at = timezone.now()
         participant.has_submitted = True
@@ -139,7 +137,6 @@ def challenge_view(request):
 
     challenges = Challenge.objects.filter(event=event).order_by('order')
 
-    # Get existing submissions for this participant
     existing_submissions = {}
     for sub in Submission.objects.filter(participant=participant, challenge__event=event):
         existing_submissions[sub.challenge_id] = {
@@ -176,17 +173,14 @@ def upload_submission(request):
         if not challenge_id or not uploaded_file:
             return JsonResponse({'status': 'error', 'message': 'Missing challenge_id or file'})
 
-        # Validate file type
         if not uploaded_file.name.endswith('.ipynb'):
             return JsonResponse({'status': 'error', 'message': 'Only .ipynb files are accepted'})
 
-        # Max file size: 10MB
         if uploaded_file.size > 10 * 1024 * 1024:
             return JsonResponse({'status': 'error', 'message': 'File too large. Max 10MB.'})
 
         challenge = get_object_or_404(Challenge, id=challenge_id)
 
-        # Create or update submission
         submission, created = Submission.objects.update_or_create(
             participant=participant,
             challenge=challenge,
@@ -217,7 +211,6 @@ def record_tab_switch(request):
         participant.save()
 
         if violated:
-            # Auto-submit
             participant.finished_at = timezone.now()
             participant.has_submitted = True
             participant.calculate_score()
@@ -257,7 +250,6 @@ def time_remaining(request):
     event = participant.event
     if event:
         remaining = participant.time_remaining_seconds
-        # Auto-submit server-side if time is up
         if participant.is_time_up and not participant.has_submitted and participant.started_at:
             participant.finished_at = timezone.now()
             participant.has_submitted = True
@@ -308,7 +300,6 @@ def leaderboard(request):
     event = Event.objects.first()
     is_admin = request.user.is_authenticated and request.user.is_staff
 
-    # Check if leaderboard is public or user is admin
     if event and not event.leaderboard_public and not is_admin:
         return render(request, 'quiz/leaderboard_private.html', {'event': event})
 
@@ -401,7 +392,6 @@ def download_all_materials(request):
             as_attachment=True,
             filename='ML_Fest_Round2_Materials.zip'
         )
-        # Clean up temp file after response is served
         response['X-Sendfile'] = tmp_path
         import atexit
         atexit.register(lambda: os.path.exists(tmp_path) and os.unlink(tmp_path))
@@ -411,8 +401,6 @@ def download_all_materials(request):
             os.unlink(tmp.name)
         raise
 
-
-# ============ ADMIN VIEWS ============
 
 @staff_member_required
 def admin_dashboard(request):
@@ -428,7 +416,6 @@ def admin_dashboard(request):
     submitted = participants.filter(has_submitted=True)
     violated = participants.filter(tab_switch_violated=True)
 
-    # Get submission counts per participant
     submission_data = {}
     for p in participants:
         subs = Submission.objects.filter(participant=p)
@@ -509,7 +496,6 @@ def stop_event(request):
     if event:
         event.is_active = False
         event.save()
-        # Auto-submit all who haven't submitted
         active = Participant.objects.filter(event=event, has_submitted=False, started_at__isnull=False)
         for p in active:
             p.finished_at = timezone.now()
@@ -540,10 +526,8 @@ def reset_challenge(request):
     """Reset challenge: clear all submissions, scores, and submission state."""
     event = Event.objects.first()
     if event:
-        # Delete all submissions (files + records)
         Submission.objects.filter(participant__event=event).delete()
 
-        # Reset all participant state but keep their registration and approval
         Participant.objects.filter(event=event).update(
             started_at=None,
             finished_at=None,
@@ -555,7 +539,6 @@ def reset_challenge(request):
             status='approved',
         )
 
-        # Reset event state
         event.is_active = False
         event.started_at = None
         event.save()
@@ -592,7 +575,6 @@ def grade_submission(request, submission_id):
         submission.is_graded = True
         submission.save()
 
-        # Recalculate participant's total score
         submission.participant.calculate_score()
 
         messages.success(request, f'Graded {submission.participant.user.username} — {submission.challenge.title}: {score} pts')

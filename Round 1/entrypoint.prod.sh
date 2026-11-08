@@ -3,7 +3,6 @@ set -e
 
 echo "=== ML Fest Round 1 — Starting ==="
 
-# Wait for database to be ready
 echo "Waiting for PostgreSQL..."
 while ! python -c "
 import socket
@@ -15,23 +14,18 @@ s.close()
 done
 echo "PostgreSQL is ready!"
 
-# Generate migrations for quiz
 echo "Generating migrations..."
 python manage.py makemigrations quiz --noinput 2>&1 || true
 
-# Apply all migrations
 echo "Applying migrations..."
 python manage.py migrate --noinput
 
-# Collect static files
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Import questions if not already done
 echo "Importing questions..."
 python manage.py import_questions --csv Final-Mixed_60_MCQ.csv 2>&1 || true
 
-# Create superuser if env vars are set
 if [ -n "$ADMIN_USERNAME" ] && [ -n "$ADMIN_PASSWORD" ]; then
     echo "Creating admin user..."
     DJANGO_SETTINGS_MODULE=mlfest.settings python -c "

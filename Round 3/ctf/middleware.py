@@ -17,7 +17,6 @@ class ApprovalGateMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated and not request.user.is_approved:
-            # Allow certain paths
             path = request.path
             if any(path.startswith(p) for p in self.ALLOWED_PREFIXES):
                 return self.get_response(request)

@@ -3,8 +3,7 @@
 {% block title %}Grade @{{ participant.user.username }}{% endblock %}
 
 {% block extra_css %}
-<style>
-    .bug-table { width: 100%; border-collapse: collapse; }
+<style>    .bug-table { width: 100%; border-collapse: collapse; }
     .bug-table th, .bug-table td {
         padding: 12px 16px;
         border-bottom: 3px solid var(--border-main);
@@ -38,7 +37,6 @@
     .bug-status .correct { color: #22c55e; }
     .bug-status .wrong { color: var(--accent-red); }
 
-    /* Custom checkbox toggle */
     .bug-toggle {
         position: relative;
         display: inline-block;
@@ -137,7 +135,6 @@
         {% csrf_token %}
 
         <div class="grade-grid">
-            <!-- Classification -->
             <div class="card-wrap">
                 <div class="card-shadow"></div>
                 <div class="card" style="padding: 0; overflow: hidden;">
@@ -180,7 +177,6 @@
                 </div>
             </div>
 
-            <!-- Regression -->
             <div class="card-wrap">
                 <div class="card-shadow"></div>
                 <div class="card" style="padding: 0; overflow: hidden;">
@@ -224,7 +220,6 @@
             </div>
         </div>
 
-        <!-- Total & Save -->
         <div class="card-wrap" style="margin-top: 24px;">
             <div class="card-shadow"></div>
             <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">

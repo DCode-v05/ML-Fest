@@ -127,7 +127,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Header -->
 <div class="ch-header">
     <div class="ch-header-left">
         <div style="margin-bottom:0.5rem;">
@@ -142,14 +141,12 @@
     </div>
 </div>
 
-<!-- Event status banner -->
 {% if not event_active %}
 <div class="alert alert-warning" style="margin-bottom:1.75rem;">
     <strong>Event not active.</strong> The event has not started yet or has ended. Flag submissions are currently closed.
 </div>
 {% endif %}
 
-<!-- Progress -->
 <div class="progress-section">
     <div class="progress-section-shadow"></div>
     <div class="progress-section-inner">
@@ -166,13 +163,11 @@
     </div>
 </div>
 
-<!-- Description -->
 <div class="desc-section">
     <div class="section-label">Description</div>
     <p class="desc-text">{{ challenge.description }}</p>
 </div>
 
-<!-- Downloads -->
 {% if resources %}
 {% if user.is_approved or user.is_admin_user %}
 <div class="download-section">
@@ -194,7 +189,6 @@
 {% endif %}
 {% endif %}
 
-<!-- Points Breakdown -->
 <div class="download-section" style="margin-bottom:1.75rem;">
     <div class="download-section-shadow"></div>
     <div class="download-section-inner">
@@ -221,7 +215,6 @@
     </div>
 </div>
 
-<!-- Flags -->
 <div class="section-label">Flag Submission</div>
 <div id="messages"></div>
 

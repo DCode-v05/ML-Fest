@@ -23,31 +23,25 @@ def cleanup():
     print()
 
     with connection.cursor() as cursor:
-        # 1. Truncate evaluations
         cursor.execute('TRUNCATE TABLE "debugchallenge_evaluation" CASCADE;')
         print("[OK] Truncated debugchallenge_evaluation")
 
-        # 2. Truncate submissions
         cursor.execute('TRUNCATE TABLE "debugchallenge_submission" CASCADE;')
         print("[OK] Truncated debugchallenge_submission")
 
-        # 2. Truncate participants
         cursor.execute('TRUNCATE TABLE "debugchallenge_participant" CASCADE;')
         print("[OK] Truncated debugchallenge_participant")
 
-        # 3. Truncate event & challenge config
         cursor.execute('TRUNCATE TABLE "debugchallenge_challenge" CASCADE;')
         print("[OK] Truncated debugchallenge_challenge")
 
         cursor.execute('TRUNCATE TABLE "debugchallenge_event" CASCADE;')
         print("[OK] Truncated debugchallenge_event")
 
-        # 4. Delete non-admin users (keep staff/superusers)
         cursor.execute('DELETE FROM "auth_user" WHERE is_staff = FALSE;')
         deleted = cursor.rowcount
         print(f"[OK] Deleted {deleted} non-admin user(s) from auth_user")
 
-        # 5. Clear sessions
         cursor.execute('TRUNCATE TABLE "django_session" CASCADE;')
         print("[OK] Truncated django_session")
 

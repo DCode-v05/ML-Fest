@@ -31,7 +31,6 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     list_display = ('event_active', 'leaderboard_public', 'challenges_revealed')
 
     def has_add_permission(self, request):
-        # Only allow one instance
         return not SiteSettings.objects.exists()
 
 

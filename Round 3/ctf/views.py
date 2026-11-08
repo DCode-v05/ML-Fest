@@ -23,8 +23,6 @@ from .forms import RegisterForm, LoginForm
 User = get_user_model()
 
 
-# ── Decorators ──────────────────────────────────────────────────
-
 def admin_required(view_func):
     """Only allow admin users."""
     @wraps(view_func)
@@ -49,8 +47,6 @@ def evaluator_required(view_func):
     return wrapper
 
 
-# ── Notebook Auth API ───────────────────────────────────────────
-
 @csrf_exempt
 @require_POST
 def notebook_login(request):
@@ -73,20 +69,15 @@ def notebook_login(request):
     return JsonResponse({"success": True, "message": f"Logged in as {user.username}."})
 
 
-# ── Home ────────────────────────────────────────────────────────
-
 def home(request):
     return render(request, 'ctf/index.html')
 
-
-# ── Auth ────────────────────────────────────────────────────────
 
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('challenges_list')
 
     if request.method == 'POST':
-        # Handle both JSON and form-encoded
         if request.content_type == 'application/json':
             import json
             data = json.loads(request.body)
@@ -115,7 +106,6 @@ def login_view(request):
         return redirect('challenges_list')
 
     if request.method == 'POST':
-        # Handle both JSON and form-encoded
         if request.content_type == 'application/json':
             import json
             data = json.loads(request.body)
@@ -150,8 +140,6 @@ def pending_approval(request):
         return redirect('challenges_list')
     return render(request, 'ctf/pending_approval.html')
 
-
-# ── Challenges ──────────────────────────────────────────────────
 
 @login_required
 def challenges_list(request):
@@ -199,7 +187,6 @@ def challenge_detail(request, challenge_id):
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     site = SiteSettings.get()
 
-    # Non-staff can only see revealed challenges
     if not (request.user.is_admin_user or request.user.is_evaluator_user):
         if not challenge.is_revealed:
             raise Http404
@@ -208,7 +195,6 @@ def challenge_detail(request, challenge_id):
     resources = challenge.resources.all()
     total_flags = flags.count()
 
-    # Compute progress
     completed = Score.objects.filter(
         user=request.user, challenge=challenge, is_approved=True
     ).count()
@@ -221,7 +207,6 @@ def challenge_detail(request, challenge_id):
         total=Sum(F('flag_points') + F('explanation_points'))
     )['total'] or 0
 
-    # Check which flags already have a score (pending or approved)
     existing_scores = {
         s.flag_id: s for s in Score.objects.filter(user=request.user, challenge=challenge)
     }
@@ -263,12 +248,10 @@ def challenge_download(request, challenge_id, filename):
     if not request.user.is_approved and not request.user.is_admin_user:
         return HttpResponse("Account not approved.", status=403)
 
-    # Collect all resource files for this challenge
     resources = challenge.resources.all()
     challenge_files_dir = settings.CHALLENGE_FILES_DIR
 
     if filename == 'all':
-        # Create a zip of all challenge files
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
             for res in resources:
@@ -281,7 +264,6 @@ def challenge_download(request, challenge_id, filename):
         response['Content-Disposition'] = f'attachment; filename="{safe_title}.zip"'
         return response
     else:
-        # Serve individual file
         resource = challenge.resources.filter(local_name=filename).first()
         if not resource:
             raise Http404
@@ -291,7 +273,6 @@ def challenge_download(request, challenge_id, filename):
         with open(filepath, 'rb') as f:
             content = f.read()
 
-        # Determine content type
         if filename.endswith('.csv'):
             ct = 'text/csv'
         elif filename.endswith('.ipynb'):
@@ -305,8 +286,6 @@ def challenge_download(request, challenge_id, filename):
         response['Content-Disposition'] = f'attachment; filename="{resource.display_name}"'
         return response
 
-
-# ── Dashboard ───────────────────────────────────────────────────
 
 @login_required
 def dashboard(request):
@@ -363,8 +342,6 @@ def dashboard(request):
     })
 
 
-# ── Flag Submission (AJAX) ──────────────────────────────────────
-
 @require_POST
 @login_required
 def submit_flag(request, challenge_id, flag_order):
@@ -380,7 +357,6 @@ def submit_flag(request, challenge_id, flag_order):
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     flag = get_object_or_404(Flag, challenge=challenge, flag_order=flag_order)
 
-    # Check if already has a score entry
     existing = Score.objects.filter(user=request.user, flag=flag).first()
     if existing:
         if existing.is_approved:
@@ -397,8 +373,6 @@ def submit_flag(request, challenge_id, flag_order):
     if not submitted_value:
         return JsonResponse({'success': False, 'message': 'Please enter a flag value.'})
 
-    # Validate against the user's unique per-user flag first,
-    # falling back to the global flag for backwards compatibility.
     from .models import UserFlag
     user_flag = UserFlag.objects.filter(user=request.user, challenge=challenge).first()
     if user_flag:
@@ -414,7 +388,6 @@ def submit_flag(request, challenge_id, flag_order):
     )
 
     if is_correct:
-        # Create pending score
         Score.objects.create(
             user=request.user,
             challenge=challenge,
@@ -431,8 +404,6 @@ def submit_flag(request, challenge_id, flag_order):
         return JsonResponse({'success': False, 'message': 'Incorrect flag. Try again.'})
 
 
-# ── Leaderboard ─────────────────────────────────────────────────
-
 @login_required
 def leaderboard_page(request):
     return render(request, 'ctf/leaderboard.html')
@@ -441,16 +412,11 @@ def leaderboard_page(request):
 def leaderboard_api(request):
     site = SiteSettings.get()
 
-    # Admin/evaluator always see leaderboard; participants only if public
     if request.user.is_authenticated and (request.user.is_admin_user or request.user.is_evaluator_user):
-        pass  # always allowed
+        pass
     elif not site.leaderboard_public:
         return JsonResponse({'success': False, 'message': 'Leaderboard is private'})
 
-    # Get all approved participants with points.
-    # Tiebreaker: among equal points the participant who reached that total
-    # FIRST (earlier last_flag_at) ranks higher.  NULLs (no approved flags)
-    # are pushed to the bottom.
     import datetime as _dt
     from django.db.models import Value
     from django.db.models.functions import Coalesce
@@ -503,7 +469,6 @@ def export_leaderboard_xlsx(request):
     ws = wb.active
     ws.title = "Round 3 - Leaderboard"
 
-    # Styles
     header_font = Font(bold=True, color="FFFFFF", size=12)
     header_fill = PatternFill(start_color="7B1FA2", end_color="7B1FA2", fill_type="solid")
     header_align = Alignment(horizontal="center", vertical="center")
@@ -541,7 +506,6 @@ def export_leaderboard_xlsx(request):
             if col in (1, 4, 5):
                 cell.alignment = Alignment(horizontal="center")
 
-    # Auto-width columns
     for col_cells in ws.columns:
         max_len = max(len(str(cell.value or "")) for cell in col_cells) + 2
         ws.column_dimensions[col_cells[0].column_letter].width = max_len
@@ -554,8 +518,6 @@ def export_leaderboard_xlsx(request):
     return response
 
 
-# ── Admin Dashboard ─────────────────────────────────────────────
-
 @admin_required
 def admin_dashboard(request):
     site = SiteSettings.get()
@@ -566,7 +528,6 @@ def admin_dashboard(request):
     participants = User.objects.filter(role=User.ROLE_PARTICIPANT, is_approved=True)
     assignments = EvaluatorAssignment.objects.select_related('evaluator', 'participant').all()
 
-    # Pending scores for admin review
     pending_scores = Score.objects.filter(is_approved=False).select_related(
         'user', 'challenge', 'flag'
     )
@@ -627,10 +588,8 @@ def admin_toggle_leaderboard(request):
 def admin_reset_leaderboard(request):
     """Wipe all scores, submissions, and zero every participant's points
     so the challenge can be re-conducted from scratch."""
-    # Delete all scores and submissions
     Score.objects.all().delete()
     Submission.objects.all().delete()
-    # Zero out every participant's points and clear last_flag_at
     User.objects.filter(role=User.ROLE_PARTICIPANT).update(
         total_points=0,
         last_flag_at=None,
@@ -645,7 +604,6 @@ def admin_toggle_challenges(request):
     site = SiteSettings.get()
     site.challenges_revealed = not site.challenges_revealed
     site.save()
-    # Also update all individual challenges
     Challenge.objects.all().update(is_revealed=site.challenges_revealed)
     state = "revealed" if site.challenges_revealed else "hidden"
     messages.success(request, f"All challenges {state}.")
@@ -717,7 +675,6 @@ def admin_assign_evaluator(request):
     evaluator = get_object_or_404(User, pk=evaluator_id)
     participant = get_object_or_404(User, pk=participant_id)
 
-    # Upsert: update if participant already assigned, else create
     assignment, created = EvaluatorAssignment.objects.update_or_create(
         participant=participant,
         defaults={'evaluator': evaluator},
@@ -780,7 +737,6 @@ def admin_update_challenge(request, challenge_id):
         challenge.description = desc
     challenge.save()
 
-    # Update flag content if provided
     flag_content = request.POST.get('flag_content')
     if flag_content:
         flag = challenge.flags.first()
@@ -792,13 +748,9 @@ def admin_update_challenge(request, challenge_id):
     return redirect('admin_dashboard')
 
 
-# ── Evaluator Dashboard ─────────────────────────────────────────
-
 @evaluator_required
 def evaluator_dashboard(request):
-    # Get participants assigned to this evaluator
     if request.user.is_admin_user:
-        # Admin sees all pending scores
         assigned_ids = User.objects.filter(role=User.ROLE_PARTICIPANT).values_list('id', flat=True)
     else:
         assigned_ids = EvaluatorAssignment.objects.filter(
@@ -823,7 +775,6 @@ def evaluator_dashboard(request):
             'explanation_points_max': score.challenge.explanation_points_max,
         })
 
-    # Recently approved by this evaluator
     recent_approved = Score.objects.filter(
         is_approved=True, approved_by=request.user
     ).select_related('user', 'challenge', 'approved_by').order_by('-approved_at')[:20]
@@ -842,7 +793,6 @@ def evaluator_approve(request, score_id):
     flag_points = int(request.POST.get('flag_points', 0))
     explanation_points = int(request.POST.get('explanation_points', 0))
 
-    # Cap to challenge max
     flag_points = min(flag_points, score.challenge.flag_points_max)
     explanation_points = min(explanation_points, score.challenge.explanation_points_max)
 
@@ -853,7 +803,6 @@ def evaluator_approve(request, score_id):
     score.approved_at = timezone.now()
     score.save()
 
-    # Recalculate user points
     score.user.recalculate_points()
 
     messages.success(request, f"Score approved: {flag_points} flag + {explanation_points} explanation pts for {score.user.username}.")
@@ -869,8 +818,6 @@ def evaluator_reject(request, score_id):
     messages.success(request, f"Submission by '{username}' rejected.")
     return redirect('evaluator_dashboard')
 
-
-# ── Admin: View All User Flags ───────────────────────────────────
 
 @admin_required
 def admin_user_flags(request):
@@ -909,7 +856,6 @@ def remove_all_users(request):
     """Remove ALL non-admin users from the system."""
     users = User.objects.exclude(role=User.ROLE_ADMIN).exclude(is_superuser=True)
     count = users.count()
-    # Delete related data first
     Score.objects.filter(user__in=users).delete()
     Submission.objects.filter(user__in=users).delete()
     UserFlag.objects.filter(user__in=users).delete()

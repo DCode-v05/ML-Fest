@@ -79,7 +79,6 @@
         </div>
     </div>
 
-    <!-- Stats -->
     <div class="grid-4 mb-4">
         <div class="stat-card-wrap">
             <div class="stat-shadow"></div>
@@ -112,9 +111,7 @@
     </div>
 
     <div class="dash-grid">
-        <!-- Left Column -->
         <div>
-            <!-- Event Controls -->
             <div class="card-wrap" style="margin-bottom: 20px;">
                 <div class="card-shadow"></div>
                 <div class="card">
@@ -172,7 +169,6 @@
                             </div>
                         </div>
 
-                        <!-- Visibility Toggles -->
                         <div style="margin-bottom: 16px;">
                             <div class="toggle-row">
                                 <div>
@@ -204,7 +200,6 @@
                 </div>
             </div>
 
-            <!-- Tab Switch Violations -->
             {% if violated %}
             <div class="card-wrap">
                 <div class="card-shadow" style="background: var(--accent-red);"></div>
@@ -245,7 +240,6 @@
             {% endif %}
         </div>
 
-        <!-- Right Column: Participants -->
         <div>
             <div class="card-wrap">
                 <div class="card-shadow"></div>
@@ -268,7 +262,6 @@
                         <button class="tab-btn" onclick="switchTab('disqualified', this)">DQ'd ({{ disqualified|length }})</button>
                     </div>
 
-                    <!-- Pending Tab -->
                     <div class="tab-content active" id="tab-pending">
                         {% if pending %}
                         <table class="admin-table">
@@ -297,7 +290,6 @@
                         {% endif %}
                     </div>
 
-                    <!-- Approved Tab -->
                     <div class="tab-content" id="tab-approved">
                         {% if approved %}
                         <table class="admin-table">
@@ -338,7 +330,6 @@
                         {% endif %}
                     </div>
 
-                    <!-- Disqualified Tab -->
                     <div class="tab-content" id="tab-disqualified">
                         {% if disqualified %}
                         <table class="admin-table">

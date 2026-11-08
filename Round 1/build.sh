@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Build script for Render deployment
 set -o errexit
 
 pip install -r requirements.txt
@@ -7,10 +6,8 @@ pip install -r requirements.txt
 python manage.py collectstatic --noinput
 python manage.py migrate
 
-# Import questions if not already imported
 python manage.py import_questions
 
-# Create superuser from env vars if not exists
 python -c "
 import django, os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mlfest.settings')

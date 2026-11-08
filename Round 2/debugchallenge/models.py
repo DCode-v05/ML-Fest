@@ -116,11 +116,9 @@ class Participant(models.Model):
         """Calculate total score from evaluations by the assigned evaluator."""
         total = 0
         if self.evaluator:
-            # Only count evaluations from the currently assigned evaluator
             for ev in self.evaluations_received.filter(evaluator=self.evaluator):
                 total += ev.score
         else:
-            # Fallback: sum all evaluations if no evaluator assigned
             for ev in self.evaluations_received.all():
                 total += ev.score
         self.score = total

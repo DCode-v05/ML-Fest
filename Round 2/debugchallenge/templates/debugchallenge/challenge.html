@@ -94,7 +94,6 @@
     </div>
 
     {% if event_active %}
-        <!-- ===== CHALLENGE IS ACTIVE ===== -->
         <div class="lab-hero">
             <h2>&#129302; Welcome to the ML Debugging Lab</h2>
             <p>
@@ -109,7 +108,6 @@
             </ul>
         </div>
 
-        <!-- Download all materials -->
         <div style="margin-bottom: 28px;">
             <div class="btn-wrap" style="display: inline-block;">
                 <div class="btn-shadow"></div>
@@ -119,7 +117,6 @@
             </div>
         </div>
 
-        <!-- Individual challenge cards -->
         {% for challenge in challenges %}
         <div class="card-wrap">
             <div class="challenge-card-shadow"></div>
@@ -150,7 +147,6 @@
         {% endfor %}
 
     {% else %}
-        <!-- ===== CHALLENGE IS NOT ACTIVE ===== -->
         <div class="inactive-banner">
             <div style="font-size: 48px; margin-bottom: 16px;">&#128683;</div>
             <h2>Challenge is Not Active</h2>

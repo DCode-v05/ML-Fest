@@ -1,8 +1,3 @@
-/* ── ML Fest Round 3 — Client-side Utilities ── */
-
-/**
- * Get CSRF token from the cookie (set by Django).
- */
 function getCSRFToken() {
     const name = 'csrftoken';
     const cookies = document.cookie.split(';');
@@ -10,14 +5,10 @@ function getCSRFToken() {
         c = c.trim();
         if (c.startsWith(name + '=')) return c.substring(name.length + 1);
     }
-    // Fallback: try the hidden input
     const input = document.querySelector('[name=csrfmiddlewaretoken]');
     return input ? input.value : '';
 }
 
-/**
- * Generic API call helper.
- */
 async function apiCall(url, method = 'POST', body = null) {
     const opts = {
         method,
@@ -33,9 +24,6 @@ async function apiCall(url, method = 'POST', body = null) {
     return resp.json();
 }
 
-/**
- * Show a brief toast notification.
- */
 function showToast(message, type = 'info', duration = 3500) {
     let container = document.getElementById('toast-container');
     if (!container) {
@@ -50,7 +38,6 @@ function showToast(message, type = 'info', duration = 3500) {
     toast.textContent = message;
     container.appendChild(toast);
 
-    // Trigger reflow, then show
     void toast.offsetWidth;
     toast.classList.add('show');
 
@@ -60,9 +47,6 @@ function showToast(message, type = 'info', duration = 3500) {
     }, duration);
 }
 
-/**
- * Format a date string/Date for display.
- */
 function formatDate(dateStr) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
@@ -72,9 +56,6 @@ function formatDate(dateStr) {
     });
 }
 
-/**
- * Simple debounce utility.
- */
 function debounce(fn, delay = 300) {
     let timer;
     return function (...args) {
@@ -83,9 +64,6 @@ function debounce(fn, delay = 300) {
     };
 }
 
-/**
- * Auto-dismiss Django messages after a few seconds.
- */
 document.addEventListener('DOMContentLoaded', () => {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(el => {

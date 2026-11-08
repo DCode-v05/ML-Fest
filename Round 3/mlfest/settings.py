@@ -15,10 +15,8 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
-# Disable Cross-Origin-Opener-Policy header (causes issues over plain HTTP on IP addresses)
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
-# Disable CSRF trusted-origin checking (needed for HTTP access on IP addresses)
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in CSRF_TRUSTED_ORIGINS if o.strip()]
 
@@ -68,7 +66,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mlfest.wsgi.application'
 
-# Database
 DB_ENGINE = os.environ.get('DB_ENGINE', 'sqlite3')
 
 if DB_ENGINE == 'postgresql':
@@ -103,7 +100,6 @@ TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STORAGES = {
@@ -112,11 +108,9 @@ STORAGES = {
     },
 }
 
-# Media files (challenge zips etc)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Challenge files directory
 CHALLENGE_FILES_DIR = BASE_DIR / 'challenge_files'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -125,6 +119,5 @@ LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/challenges/'
 LOGOUT_REDIRECT_URL = '/'
 
-# File upload max size (500MB)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000
 FILE_UPLOAD_MAX_MEMORY_SIZE = 524288000

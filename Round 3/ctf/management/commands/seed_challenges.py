@@ -35,7 +35,6 @@ class Command(BaseCommand):
             else:
                 updated_c += 1
 
-            # Flags
             for flag_data in entry.get('flags', []):
                 _, fc = Flag.objects.update_or_create(
                     challenge=challenge,
@@ -49,7 +48,6 @@ class Command(BaseCommand):
                 if fc:
                     created_f += 1
 
-            # Resources
             for res_data in entry.get('resources', []):
                 _, rc = ChallengeResource.objects.update_or_create(
                     challenge=challenge,

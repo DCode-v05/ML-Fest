@@ -29,7 +29,6 @@ class Command(BaseCommand):
             self.stderr.write(self.style.ERROR(f'CSV file not found: {csv_path}'))
             return
 
-        # Get or create the event
         event, created = Event.objects.get_or_create(
             name=event_name,
             defaults={'duration_minutes': 30, 'max_tab_switches': 3}
@@ -39,13 +38,11 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f'Using existing event: {event_name}')
 
-        # Clear existing questions for this event
         deleted_count = Question.objects.filter(event=event).count()
         if deleted_count:
             Question.objects.filter(event=event).delete()
             self.stdout.write(f'Cleared {deleted_count} existing questions')
 
-        # Import from CSV
         count = 0
         with open(csv_path, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)

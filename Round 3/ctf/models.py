@@ -222,7 +222,6 @@ class UserFlag(models.Model):
             secret = settings.SECRET_KEY
         raw = f"{secret}:{user_id}:{challenge_order}".encode()
         digest = hashlib.sha256(raw).hexdigest()[:8]
-        # Short mnemonic prefix per challenge for readability
         PREFIXES = {
             1: 'p01s0n',
             2: 'sh4d0w',
@@ -237,7 +236,7 @@ class UserFlag(models.Model):
     def generate_flags_for_user(cls, user):
         """Create 5 unique UserFlag rows (one per challenge) for *user*.
         Skips any that already exist."""
-        from .models import Challenge  # prevent circular import edge-case
+        from .models import Challenge
         challenges = Challenge.objects.all().order_by('order')
         created = []
         for ch in challenges:

@@ -41,7 +41,6 @@ class RegisterForm(forms.ModelForm):
         cpw = cleaned.get('confirm_password', '')
         if pw != cpw:
             self.add_error('confirm_password', "Passwords don't match.")
-        # Enforce complexity
         if pw and (not any(c.isupper() for c in pw) or not any(c.isdigit() for c in pw)):
             self.add_error('password', "Password must contain at least one uppercase letter and one number.")
         return cleaned
@@ -52,7 +51,6 @@ class RegisterForm(forms.ModelForm):
         user.is_approved = False
         if commit:
             user.save()
-            # Generate 5 unique per-user flags (one per challenge)
             from .models import UserFlag
             UserFlag.generate_flags_for_user(user)
         return user

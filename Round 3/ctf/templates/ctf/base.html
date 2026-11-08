@@ -6,8 +6,7 @@
     <meta name="theme-color" content="#FCA847">
     <title>{% block title %}ML Fest 2026 — Round 3{% endblock %}</title>
     <link rel="stylesheet" href="{% load static %}{% static 'ctf/styles.css' %}">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    <style>        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg: #FFFDF8;
@@ -38,7 +37,6 @@
             line-height: 1.6;
         }
 
-        /* ── Brutalist shadow boxes ── */
         .shadow-box { position: relative; }
         .shadow-box-shadow {
             position: absolute; inset: 0; width: 100%; height: 100%;
@@ -55,7 +53,6 @@
         .shadow-box-sm .shadow-box-shadow { transform: translate(4px, 4px); }
         .shadow-box-alt .shadow-box-content { background: var(--bg-card-alt); }
 
-        /* ── Header ── */
         header {
             background: var(--bg);
             border-bottom: 2px solid var(--border-dark);
@@ -97,7 +94,6 @@
         }
         .nav-pts { color: var(--red); font-weight: 800; }
 
-        /* ── Buttons ── */
         .btn {
             display: inline-flex; align-items: center; justify-content: center;
             gap: 0.4rem; padding: 0.55rem 1.2rem; border-radius: var(--radius);
@@ -117,12 +113,10 @@
         .btn-success { background: #dcfce7; color: var(--green); }
         .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.82rem; box-shadow: 2px 2px 0 var(--border-dark); }
 
-        /* ── Layout ── */
         .container {
             max-width: 1100px; margin: 2rem auto; padding: 0 1.25rem; flex: 1;
         }
 
-        /* ── Alerts ── */
         .alert {
             padding: 0.85rem 1.1rem; border-radius: var(--radius);
             margin-bottom: 1rem; font-size: 0.9rem; font-weight: 600;
@@ -133,7 +127,6 @@
         .alert-info { background: var(--bg-input); color: var(--blue); }
         .alert-warning { background: var(--accent-light); color: #92400e; }
 
-        /* ── Spinner ── */
         .spinner {
             border: 3px solid #e5e7eb; border-top: 3px solid var(--border-dark);
             border-radius: 50%; width: 36px; height: 36px;
@@ -141,7 +134,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── Page headings ── */
         .page-title {
             font-size: 1.7rem; font-weight: 800;
             letter-spacing: -0.03em; margin-bottom: 0.25rem;
@@ -150,7 +142,6 @@
             color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem;
         }
 
-        /* ── Footer ── */
         footer {
             border-top: 2px solid var(--border-dark);
             background: var(--bg); padding: 1.5rem 2rem; margin-top: 3rem;
@@ -161,7 +152,6 @@
             flex-wrap: wrap; gap: 0.75rem; font-size: 0.82rem; color: var(--text-muted);
         }
 
-        /* ── Cards (brutalist) ── */
         .gi-card { position: relative; }
         .gi-card::before {
             content: ''; position: absolute; inset: 0;
@@ -176,7 +166,6 @@
         }
         .gi-card:hover .gi-card-inner { transform: translate(-2px, -2px); }
 
-        /* ── Badges ── */
         .badge {
             display: inline-block; padding: 0.15rem 0.6rem; border-radius: 4px;
             font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;
@@ -187,7 +176,6 @@
         .badge-hard { background: #fee2e2; color: #b91c1c; }
         .badge-expert { background: #ede9fe; color: #6d28d9; }
 
-        /* ── Form elements ── */
         .form-group { margin-bottom: 1.25rem; }
         .form-group label {
             display: block; font-size: 0.85rem; font-weight: 700;
@@ -206,7 +194,6 @@
             box-shadow: 4px 4px 0 var(--border-dark);
         }
 
-        /* ── Responsive ── */
         @media (max-width: 768px) {
             nav { flex-wrap: wrap; gap: 0.75rem; }
             .nav-links { flex-wrap: wrap; gap: 0.25rem; }
